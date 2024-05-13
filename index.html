@@ -3,9 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="./styles/styles.css">
+    <script src="./scripts/scripts.js"></script>
+    <title>ABM y Form</title>
 </head>
 <body>
-    
+    <header id="header">
+        <!-- el logo y los H1 y H2 los estoy inyectando desde JS-->
+        <!-- el nav bar lo estoy inyectando desde JS -->
+    </header>
+
+    <form   action="" 
+            method="post" 
+            id="form-usuario">
+        <fieldset id="commentFS">
+            <legend>Informacion del Anuncio</legend>
+            <label for="titulo">Titulo:</label>
+            <br>
+            <input  type="text" 
+                    name="titulo" 
+                    id="titulo" 
+                    autocomplete="off" 
+                    placeholder="Titulo">
+            <br>
+            <br>
+            <fieldset>
+                <label>Transaccion</label>  
+                <br>
+                <label for="transaccion">Venta</label>
+                <input  type="checkbox" 
+                        name="transaccion" 
+                        id="venta">
+                <label for="transaccion">Alquiler</label>
+                <input  type="checkbox" 
+                        name="transaccion" 
+                        id="alquiler">
+            </fieldset>
+            <br>
+            <label for="descripcion">Descripcion:</label>
+            <br>
+            <input  type="text" 
+                    name="descripcion" 
+                    id="descripcion" 
+                    autocomplete="off" 
+                    placeholder="Descripcion">
+            <br>
+            <br>
+            <label for="descripcion">Precio:</label>
+            <br>
+            <input  type="text" 
+                    name="precio" 
+                    id="precio" 
+                    autocomplete="off" 
+                    placeholder="Precio">
+            <br>
+            <br>
+            <label for="descripcion">Puertas:</label>
+            <input  type="text" 
+                    name="puertas" 
+                    id="puertas" 
+                    autocomplete="off" 
+                    placeholder="Puertas">
+            <label for="descripcion">KMs:</label>
+            <input  type="text" 
+                    name="kms" 
+                    id="kms" 
+                    autocomplete="off" 
+                    placeholder="KMs">
+            <label for="descripcion">Velocidad:</label>
+            <input  type="text" 
+                    name="velocidad" 
+                    id="velocidad" 
+                    autocomplete="off" 
+                    placeholder="Velocidad">
+        </fieldset>
+        <input  type="submit"
+                value="Submit">
+    </form>
+
+
+    <footer id="footer">
+        <!-- el nav bar lo estoy inyectando desde JS -->
+        <!-- Copyright lo estoy inyectando desde JS -->
+    </footer>
 </body>
 </html>
