@@ -13,7 +13,8 @@
         <!-- el logo y los H1 y H2 los estoy inyectando desde JS-->
         <!-- el nav bar lo estoy inyectando desde JS -->
     </header>
-
+    <br>
+    <br>
     <form   action="" 
             method="post" 
             id="form-usuario">
@@ -78,11 +79,35 @@
                     autocomplete="off" 
                     placeholder="Velocidad">
         </fieldset>
+        <br>
         <input  type="submit"
-                value="Submit">
+                value="Guardar">
     </form>
+    <br>
+    <br>
+    <div class="container-table flex">
+        <table id="table-items" class="table-items table-stripped flex">
+          <thead>
+            <tr class="flex">
+              <th>ID</th>
+              <th>Titulo</th>
+              <th>Transaccion</th>
+              <th>Descripcion</th>
+              <th>Precio</th>
+              <th>Puertas</th>
+              <th>Kilometros</th>
+              <th>Potencia</th>
+            </tr>
+          </thead>
 
+          <tbody>
+            <!--    ACA VOY A COMPLETAR LA INFO DINAMICAMENTE DEL LOCAL STORAGE -->
+          </tbody>
+        </table>
+      </div>
 
+    <br>
+    <br>
     <footer id="footer">
         <!-- el nav bar lo estoy inyectando desde JS -->
         <!-- Copyright lo estoy inyectando desde JS -->
