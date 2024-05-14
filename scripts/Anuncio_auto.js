@@ -1,3 +1,5 @@
+import { Anuncio } from "./anuncio.js";
+
 export class anuncio_Auto extends Anuncio{
     constructor(id, titulo, transaccion, descripcion, precio, puertas, kilometros, velocidad) {
       super(id,titulo,transaccion,descripcion,precio);

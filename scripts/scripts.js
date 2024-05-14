@@ -1,4 +1,3 @@
-import { Anuncio } from "./anuncio.js";
 import { anuncio_Auto } from "./anuncio_Auto.js";
 import { mostrarSpinner, ocultarSpinner} from "./spinner.js";
 
