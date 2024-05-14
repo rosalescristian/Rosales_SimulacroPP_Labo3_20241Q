@@ -1,4 +1,4 @@
-export class Anuncio_Auto extends Anuncio{
+export class anuncio_Auto extends Anuncio{
     constructor(id, titulo, transaccion, descripcion, precio, puertas, kilometros, velocidad) {
       super(id,titulo,transaccion,descripcion,precio);
       this.puertas = puertas;

@@ -1,7 +1,19 @@
+import { Anuncio } from "./anuncio.js";
+import { anuncio_Auto } from "./anuncio_Auto.js";
+import { mostrarSpinner, ocultarSpinner} from "./spinner.js";
+
+let items = [];
+const KEY_STORAGE = "autos"; 
+
 document.addEventListener("DOMContentLoaded", ()=>{
     includeNavBar();
     includeHeader();
     includeFooter();
+    limpiarTabla();
+    actualizarFormulario();
+    loadItems();
+    rellenarTabla();
+    escuchandoFormulario();
 });
 
 
@@ -58,4 +70,117 @@ function includeFooter(){
     const footer = document.getElementById('footer');
     const footerContent = generarHTMLFooter();
     footer.innerHTML += footerContent;
+}
+
+
+/*  SCRIPTS DE LA TABLA */
+
+//function loadItems() {
+//  let str = leer(KEY_STORAGE) || "[]"; // traeme los datos y si estas vacio definime un array vacio.
+//  const objetos = jsonToObject(str) || [];
+
+  /*objetos.forEach(obj => {
+        const model = new Casa(
+            obj.id,
+            obj.titulo,
+            obj.precio
+        );
+        items.push(model);
+    });*/
+//  items = objetos.map((obj) => {
+//    return new Casa(obj.id, obj.titulo, obj.precio);
+//  });
+//}
+
+// Obtenga el elemento del DOM Table
+// Luego agregarle las filas que sean necesarias
+// se agregaran dependiendo de la contidad de items que poseo
+function rellenarTabla() {
+  const tabla = document.getElementById("table-items");
+  const tbody = tabla.getElementsByTagName("tbody")[0];
+  tbody.innerHTML = "";
+
+  const celdas = [  "id"
+                    , "titulo"
+                    , "transaccion"
+                    , "descripcion"
+                    , "precio"
+                    , "puertas"
+                    , "kilometros"
+                    , "potencia"];
+
+  items.forEach((item) => {
+    let nuevaFila = document.createElement("tr");
+
+    celdas.forEach((celda) => {
+      let nuevaCelda = document.createElement("td");
+      nuevaCelda.textContent = item[celda];
+      nuevaFila.appendChild(nuevaCelda);
+    });
+    tbody.appendChild(nuevaFila);
+  });
+}
+
+function escuchandoFormulario() {
+  const formulario = obtenerFormulario();
+  formulario.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const model = new Casa( 
+      formulario.querySelector("#id").value,
+      formulario.querySelector("#titulo").value,
+      formulario.querySelector("#transaccion").value,
+      formulario.querySelector("#descripcion").value,
+      formulario.querySelector("#precio").value,
+      formulario.querySelector("#puertas").value,
+      formulario.querySelector("#kilometros").value,
+      formulario.querySelector("#optencia").value,
+    );
+
+    const rta = model.verify();
+
+    if (rta) {
+      items.push(model);
+      const str = objectToJson(items);
+
+      escribir(KEY_STORAGE, str);
+      actualizarFormulario();
+      rellenarTabla();
+
+    } else {
+      alert("Error en la carga de datos!");
+    }
+  });
+}
+
+function actualizarFormulario() {
+  const formulario = obtenerFormulario();
+  if (formulario) formulario.reset();
+}
+
+function obtenerFormulario() {
+  return document.getElementById("form-item");
+}
+
+function limpiarTabla(){
+    const table = getElementById("table-items");
+    table.innerHTML = '';
+}
+
+async function loadItems(){
+  mostrarSpinner();
+  let str = await leer(KEY_STORAGE);
+  ocultarSpinner();
+  const objetos = jsonToObject(str) || [];
+
+  objetos.forEach(obj =>{
+    const model = new Casa(
+      obj.id,
+      obj.titulo,
+      obj.precio
+    );
+
+    items.push(model);
+  });
+  rellenarTabla();
 }
