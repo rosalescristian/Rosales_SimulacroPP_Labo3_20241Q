@@ -5,17 +5,18 @@ import { mostrarSpinner, ocultarSpinner} from "./spinner.js";
 let items = [];
 const KEY_STORAGE = "autos"; 
 
-document.addEventListener("DOMContentLoaded", ()=>{
+document.addEventListener("DOMContentLoaded", onInit());
+
+function onInit(){
     includeNavBar();
     includeHeader();
     includeFooter();
-    limpiarTabla();
+    /*limpiarTabla();
     actualizarFormulario();
     loadItems();
     rellenarTabla();
-    escuchandoFormulario();
-});
-
+    escuchandoFormulario();*/
+}
 
 // Genero la nav bar
 function generarNavBar() {
