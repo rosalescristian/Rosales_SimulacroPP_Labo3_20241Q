@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://fonts.googleapis.com">
     <!-- <link rel="stylesheet" href="./styles/styles.css"> -->
+    <link rel="stylesheet" href="./styles/newStyles.css">
     <!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> -->
     <!-- <script src="./scripts/scripts.js" type="module"></script> --> <!-- usando "defer" despues del type sin las comillas, no hace falta q usemos el OnContentLoad + OnInit -->
     <script src="./scripts/scripts_async.js" type="module"></script>
@@ -18,10 +19,6 @@
         <!-- el logo y los H1 y H2 los estoy inyectando desde JS-->
         <!-- el nav bar lo estoy inyectando desde JS -->
     </header>
-
-    <br>
-    <br>
-
     <div class="container-sections">
         <section>
           <form action="" method="post" id="form-item">
@@ -29,54 +26,45 @@
   
             <div class="form-group">
                 <label for="titulo">Titulo:</label>
-                <br>
                 <input  type="text" 
                         name="titulo" 
                         id="titulo" 
                         autocomplete="off" 
                         placeholder="Titulo">
-                <br>
-                <br>
             </div>
   
             <div class="form-group">
                 <fieldset>
                     <label>Transaccion</label>  
-                    <br>
                     <label for="venta">Venta</label>
-                    <input  type="checkbox" 
+                    <input  type="radio" 
                             name="transaccion" 
-                            id="venta">
+                            id="venta"
+                            value="venta" checked>
                     <label for="alquiler">Alquiler</label>
-                    <input  type="checkbox" 
+                    <input  type="radio" 
                             name="transaccion" 
-                            id="alquiler">
+                            id="alquiler"
+                            value="alquiler">
                 </fieldset>
-                <br>
             </div>
   
             <div class="form-group">
                 <label for="descripcion">Descripcion:</label>
-                <br>
                 <input  type="text" 
                         name="descripcion" 
                         id="descripcion" 
                         autocomplete="off" 
                         placeholder="Descripcion">
-                <br>
-                <br>
             </div>
 
             <div class="form-group">
                 <label for="descripcion">Precio:</label>
-                <br>
                 <input  type="text" 
                         name="precio" 
                         id="precio" 
                         autocomplete="off" 
                         placeholder="Precio">
-                <br>
-                <br>
             </div>
 
             <div class="form-group">
@@ -101,24 +89,21 @@
                         autocomplete="off" 
                         placeholder="Velocidad">
             </div>
-            <br>
-            <br>
-            <div class="form-group">
+            <!-- <div class="form-group">
               <button type="submit" class="btn">Guardar</button>
+            </div> -->
+            <div class="btnFrm">
+              <input id="btnGuardar" type="submit" value="Guardar">
+              <input id="btnEliminar" type="button" value="Eliminar" class="oculto">
+              <input id="btnCancelar" type="button" value="Cancelar" class="oculto">
             </div>
           </form>
-  
-          <br /><br /><br /><br /><br />
-
-          <button type="button" id="btn-delete-all" class="btn">Borrar todo</button>
         </section>
     </div>
     
     <div id="spinner" class="spinner">
       <img src="./images/wheel.png" alt="Spinner" class="spinner-img">
     </div>
-
-
 
     <div class="container-table flex">
         <table id="table-items" class="table-items table-stripped flex">
@@ -139,10 +124,9 @@
             <!--    ACA VOY A COMPLETAR LA INFO DINAMICAMENTE DEL LOCAL STORAGE -->
           </tbody>
         </table>
+        <button type="button" id="btn-delete-all" class="btn">Borrar todo</button>
       </div>
 
-    <br>
-    <br>
     <footer id="footer">
         <!-- el nav bar lo estoy inyectando desde JS -->
         <!-- Copyright lo estoy inyectando desde JS -->

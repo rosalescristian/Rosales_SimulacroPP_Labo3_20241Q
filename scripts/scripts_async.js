@@ -26,7 +26,6 @@ function onInit(){
 async function loadItems() { // primer version de LOAD ITEMS
     mostrarSpinner();
     let str = await leer(KEY_STORAGE) || "[]"; // traeme los datos y si estas vacio definime un array vacio.
-    ocultarSpinner();
     const objetos = jsonToObject(str) || [];
 
     objetos.forEach(obj => {
@@ -53,12 +52,14 @@ async function loadItems() { // primer version de LOAD ITEMS
                                 obj.kilometros,
                                 obj.potencia);
     });
+    ocultarSpinner();
 }
 
 // Obtenga el elemento del DOM Table
 // Luego agregarle las filas que sean necesarias
 // se agregaran dependiendo de la cantidad de items que poseo
 function rellenarTabla() {
+    mostrarSpinner();
     const tabla = document.getElementById("table-items");
     const tbody = tabla.getElementsByTagName("tbody")[0];
     tbody.innerHTML = '';
@@ -76,18 +77,20 @@ function rellenarTabla() {
   
       tbody.appendChild(nuevaFila); // Agregar la fila completa al cuerpo de la tabla
     });
+    ocultarSpinner();
   }
 
 function escuchandoFormulario() {
+    mostrarSpinner();
     formulario.addEventListener("submit", async(e) => {
         e.preventDefault();
-
         const fechaActual = new Date();
+        const transaccionSeleccionada = formulario.querySelector('input[name="transaccion"]:checked').value;
 
         const model = new anuncio_Auto( 
           fechaActual.getTime(),                      // paso la fecha completa actual como ID
           formulario.querySelector("#titulo").value,
-          "alquiler",                                // tengo q resolver como levantar el check box
+          transaccionSeleccionada,                                // tengo q resolver como levantar el check box
           formulario.querySelector("#descripcion").value,
           formulario.querySelector("#precio").value,
           formulario.querySelector("#puertas").value,
@@ -102,6 +105,7 @@ function escuchandoFormulario() {
           const str = objectToJson(items);
           try{
             await escribir(KEY_STORAGE, str);
+            ocultarSpinner();
             actualizarFormulario();
             rellenarTabla();
           }
@@ -141,12 +145,13 @@ function escuchandoBtnDeleteAll() {
   const btn = document.getElementById("btn-delete-all");
   btn.addEventListener("click", async (e) => {
     const rta = confirm('Desea eliminar por completo todos los items?');
-    
+    mostrarSpinner();
     if(rta){
       items.splice(0, items.length);
       try{
         await limpiar(KEY_STORAGE);
         rellenarTabla();
+        ocultarSpinner();
       }
       catch(error){
         alert(error);
