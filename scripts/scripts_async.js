@@ -108,8 +108,11 @@ function escuchandoClickFila() {
 }
 
 function editarRegistro(id) {
-    const item = items.find((i) => i.id == id);
-    if (item) {
+    const itemIndex = items.findIndex((i) => i.id == id);
+    if (itemIndex !== -1) {
+        const item = items[itemIndex];
+
+        // Llena el formulario con los datos del registro seleccionado
         formulario.querySelector("#id").value = item.id;
         formulario.querySelector("#titulo").value = item.titulo;
         
@@ -127,6 +130,48 @@ function editarRegistro(id) {
         formulario.querySelector("#puertas").value = item.puertas;
         formulario.querySelector("#kms").value = item.kilometros;
         formulario.querySelector("#potencia").value = item.potencia;
+
+        // Elimina el evento de envío existente y agrega uno nuevo
+        formulario.removeEventListener("submit", onSubmitEditar);
+        formulario.addEventListener("submit", function onSubmitEditar(e) {
+            e.preventDefault();
+            
+            const id = formulario.querySelector("#id").value;
+            const itemIndex = items.findIndex((i) => i.id == id);
+
+            if (itemIndex !== -1) {
+                const fechaActual = new Date();
+                const model = new anuncio_Auto(
+                    id,
+                    formulario.querySelector("#titulo").value,
+                    formulario.querySelector('input[name="transaccion"]:checked').value,
+                    formulario.querySelector("#descripcion").value,
+                    formulario.querySelector("#precio").value,
+                    formulario.querySelector("#puertas").value,
+                    formulario.querySelector("#kms").value,
+                    formulario.querySelector("#potencia").value,
+                );
+
+                const rta = model.verify();
+
+                if (rta) {
+                    mostrarSpinner();
+                    // Actualiza el registro existente en el array
+                    items[itemIndex] = model;
+                    const str = objectToJson(items);
+                    try {
+                        escribir(KEY_STORAGE, str);
+                        actualizarFormulario();
+                        rellenarTabla();
+                    } catch (error) {
+                        alert(error);
+                    }
+                    ocultarSpinner();
+                } else {
+                    alert("Error en la carga de datos! Hay información incorrecta o incompleta. Verifique.");
+                }
+            }
+        });
     }
 }
 
@@ -150,7 +195,7 @@ function borrarRegistro(id) {
   }
 }
 
-function escuchandoFormulario() {
+/* function escuchandoFormulario() {
     formulario.addEventListener("submit", async (e) => {
         e.preventDefault();
         const fechaActual = new Date();
@@ -185,7 +230,47 @@ function escuchandoFormulario() {
         }
     });
 }
+ */
 
+function escuchandoFormulario() {
+    formulario.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const fechaActual = new Date();
+        const id = formulario.querySelector("#id").value;
+        const modelIndex = items.findIndex((item) => item.id == id);
+
+        if (modelIndex !== -1) {
+            const model = items[modelIndex];
+            model.titulo = formulario.querySelector("#titulo").value;
+            model.transaccion = formulario.querySelector('input[name="transaccion"]:checked').value;
+            model.descripcion = formulario.querySelector("#descripcion").value;
+            model.precio = formulario.querySelector("#precio").value;
+            model.puertas = formulario.querySelector("#puertas").value;
+            model.kilometros = formulario.querySelector("#kms").value;
+            model.potencia = formulario.querySelector("#potencia").value;
+
+            const rta = model.verify();
+
+            if (rta) {
+                mostrarSpinner();
+                items[modelIndex] = model;
+                const str = objectToJson(items);
+                try {
+                    await escribir(KEY_STORAGE, str);
+                    actualizarFormulario();
+                    rellenarTabla();
+                } catch (error) {
+                    alert(error);
+                }
+                ocultarSpinner();
+            } else {
+                alert("Error en la carga de datos! Hay información incorrecta o incompleta. Verifique.");
+            }
+        } else {
+            alert("No se pudo encontrar el registro para editar.");
+        }
+    });
+}
 function actualizarFormulario() {
     if (formulario) {
         formulario.reset();
