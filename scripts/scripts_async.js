@@ -1,222 +1,267 @@
-/* import Swal from 'sweetalert2/dist/sweetalert2.js' */
-
 import { anuncio_Auto } from "./anuncio_Auto.js";
-import { leer, escribir , limpiar, jsonToObject, objectToJson } from "./local_storage_async.js";
-import { mostrarSpinner, ocultarSpinner} from "./spinner.js";
+import { leer, escribir, limpiar, jsonToObject, objectToJson } from "./local_storage_async.js";
+import { mostrarSpinner, ocultarSpinner } from "./spinner.js";
 
 let items = [];
 let formulario = null;
-const KEY_STORAGE = "autos"; // es el nombre de la key q uso para local_storage DEFINIRLA!!!
+const KEY_STORAGE = "autos";
 
-document.addEventListener("DOMContentLoaded", onInit());
+window.addEventListener("DOMContentLoaded", onInit);
 
-function onInit(){
+function onInit() {
     includeNavBar();
     includeHeader();
     includeFooter();
     actualizarFormulario();
-    loadItems();
     obtenerFormulario();
     escuchandoFormulario();
     escuchandoBtnDeleteAll();
+    escuchandoClickFila();
+    loadItems();
 }
 
-/*  SCRIPTS DE LA TABLA: VERSION ASINCRONICA */
-
-async function loadItems() { // primer version de LOAD ITEMS
+async function loadItems() {
     mostrarSpinner();
-    let str = await leer(KEY_STORAGE) || "[]"; // traeme los datos y si estas vacio definime un array vacio.
+    let str = await leer(KEY_STORAGE) || "[]";
     const objetos = jsonToObject(str) || [];
 
     objetos.forEach(obj => {
         const model = new anuncio_Auto(
-                                        obj.id,
-                                        obj.titulo,
-                                        obj.transaccion,
-                                        obj.descripcion,
-                                        obj.precio,
-                                        obj.puertas,
-                                        obj.kilometros,
-                                        obj.potencia
-                                    );
+            obj.id,
+            obj.titulo,
+            obj.transaccion,
+            obj.descripcion,
+            obj.precio,
+            obj.puertas,
+            obj.kilometros,
+            obj.potencia
+        );
         items.push(model);
     });
-    rellenarTabla();
     items = objetos.map((obj) => {
-        return new anuncio_Auto(obj.id,
-                                obj.titulo,
-                                obj.transaccion,
-                                obj.descripcion,
-                                obj.precio,
-                                obj.puertas,
-                                obj.kilometros,
-                                obj.potencia);
+        return new anuncio_Auto(
+            obj.id,
+            obj.titulo,
+            obj.transaccion,
+            obj.descripcion,
+            obj.precio,
+            obj.puertas,
+            obj.kilometros,
+            obj.potencia
+        );
     });
+    rellenarTabla();
     ocultarSpinner();
 }
 
-// Obtenga el elemento del DOM Table
-// Luego agregarle las filas que sean necesarias
-// se agregaran dependiendo de la cantidad de items que poseo
 function rellenarTabla() {
     mostrarSpinner();
     const tabla = document.getElementById("table-items");
     const tbody = tabla.getElementsByTagName("tbody")[0];
     tbody.innerHTML = '';
-  
+
     const celdas = ["id", "titulo", "transaccion", "descripcion", "precio", "puertas", "kilometros", "potencia"];
-  
+
     items.forEach((item) => {
-      let nuevaFila = document.createElement("tr"); // Mover la creación de la fila aquí
-  
-      celdas.forEach((celda) => {
-        let nuevaCelda = document.createElement("td"); // Crear una nueva celda para cada propiedad
-        nuevaCelda.textContent = item[celda];
-        nuevaFila.appendChild(nuevaCelda); // Agregar la celda a la fila
-      });
-  
-      tbody.appendChild(nuevaFila); // Agregar la fila completa al cuerpo de la tabla
+        let nuevaFila = document.createElement("tr");
+        nuevaFila.setAttribute("data-id", item.id);
+
+        celdas.forEach((celda) => {
+            let nuevaCelda = document.createElement("td");
+            nuevaCelda.textContent = item[celda];
+            nuevaFila.appendChild(nuevaCelda);
+        });
+
+        let celdaEditar = document.createElement("td");
+        let botonEditar = document.createElement("button");
+        botonEditar.textContent = "Editar";
+        botonEditar.classList.add("btn-editar");
+        celdaEditar.appendChild(botonEditar);
+
+        let celdaBorrar = document.createElement("td");
+        let botonBorrar = document.createElement("button");
+        botonBorrar.textContent = "Borrar";
+        botonBorrar.classList.add("btn-borrar");
+        celdaBorrar.appendChild(botonBorrar);
+
+        nuevaFila.appendChild(celdaEditar);
+        nuevaFila.appendChild(celdaBorrar);
+
+        tbody.appendChild(nuevaFila);
     });
     ocultarSpinner();
+}
+
+function escuchandoClickFila() {
+    const tabla = document.getElementById("table-items");
+    tabla.addEventListener("click", (e) => {
+        const fila = e.target.closest("tr");
+        if (fila) {
+            const id = fila.getAttribute("data-id");
+            if (e.target.classList.contains("btn-editar")) {
+                editarRegistro(id);
+            } else if (e.target.classList.contains("btn-borrar")) {
+                borrarRegistro(id);
+            }
+        }
+    });
+}
+
+function editarRegistro(id) {
+    const item = items.find((i) => i.id == id);
+    if (item) {
+        formulario.querySelector("#id").value = item.id;
+        formulario.querySelector("#titulo").value = item.titulo;
+        
+        const transaccionVenta = formulario.querySelector("#venta");
+        const transaccionAlquiler = formulario.querySelector("#alquiler");
+        
+        if (item.transaccion === "venta") {
+            transaccionVenta.checked = true;
+        } else if (item.transaccion === "alquiler") {
+            transaccionAlquiler.checked = true;
+        }
+
+        formulario.querySelector("#descripcion").value = item.descripcion;
+        formulario.querySelector("#precio").value = item.precio;
+        formulario.querySelector("#puertas").value = item.puertas;
+        formulario.querySelector("#kms").value = item.kilometros;
+        formulario.querySelector("#potencia").value = item.potencia;
+    }
+}
+
+function borrarRegistro(id) {
+  const index = items.findIndex((i) => i.id == id);
+  if (index !== -1) {
+      const rta = confirm('¿Desea eliminar este registro?');
+      if (rta) {
+          items.splice(index, 1);
+          mostrarSpinner();
+          escribir(KEY_STORAGE, objectToJson(items))
+              .then(() => {
+                  rellenarTabla();
+                  ocultarSpinner();
+              })
+              .catch((error) => {
+                  alert(error);
+                  ocultarSpinner();
+              });
+      }
   }
+}
 
 function escuchandoFormulario() {
-    mostrarSpinner();
-    formulario.addEventListener("submit", async(e) => {
+    formulario.addEventListener("submit", async (e) => {
         e.preventDefault();
         const fechaActual = new Date();
-        const transaccionSeleccionada = formulario.querySelector('input[name="transaccion"]:checked').value;
 
-        const model = new anuncio_Auto( 
-          fechaActual.getTime(),                      // paso la fecha completa actual como ID
-          formulario.querySelector("#titulo").value,
-          transaccionSeleccionada,                                // tengo q resolver como levantar el check box
-          formulario.querySelector("#descripcion").value,
-          formulario.querySelector("#precio").value,
-          formulario.querySelector("#puertas").value,
-          formulario.querySelector("#kms").value,
-          formulario.querySelector("#potencia").value,
+        const model = new anuncio_Auto(
+            fechaActual.getTime(),
+            formulario.querySelector("#titulo").value,
+            formulario.querySelector('input[name="transaccion"]:checked').value,
+            formulario.querySelector("#descripcion").value,
+            formulario.querySelector("#precio").value,
+            formulario.querySelector("#puertas").value,
+            formulario.querySelector("#kms").value,
+            formulario.querySelector("#potencia").value,
         );
 
         const rta = model.verify();
 
         if (rta) {
-          items.push(model);
-          const str = objectToJson(items);
-          try{
-            await escribir(KEY_STORAGE, str);
+            mostrarSpinner();
+            items.push(model);
+            const str = objectToJson(items);
+            try {
+                await escribir(KEY_STORAGE, str);
+                actualizarFormulario();
+                rellenarTabla();
+            } catch (error) {
+                alert(error);
+            }
             ocultarSpinner();
-            actualizarFormulario();
-            rellenarTabla();
-          }
-          catch(error){
-            alert(error);
-          }
-          
-          /* Swal.fire({
-              title: 'Error!',
-              text: 'Do you want to continue',
-              icon: 'error',
-              confirmButtonText: 'Cool'
-          }) */
-
         } else {
-            alert("Error en la carga de datos! Hay informacion incorrecta o incompleta. Verifique.");
+            alert("Error en la carga de datos! Hay información incorrecta o incompleta. Verifique.");
         }
-    }); 
-    }
+    });
+}
 
 function actualizarFormulario() {
-  if (formulario){
-    formulario.reset();
-  }
+    if (formulario) {
+        formulario.reset();
+    }
 }
 
 function obtenerFormulario() {
-  return formulario = document.getElementById("form-item");
+    formulario = document.getElementById("form-item");
+    return formulario;
 }
 
-function limpiarTabla(){
+function limpiarTabla() {
     const table = document.getElementById("table-items");
     table.innerHTML = '';
 }
 
-function escuchandoBtnDeleteAll() {
+function escuchandoBtnDeleteAll(){
   const btn = document.getElementById("btn-delete-all");
   btn.addEventListener("click", async (e) => {
-    const rta = confirm('Desea eliminar por completo todos los items?');
-    mostrarSpinner();
-    if(rta){
-      items.splice(0, items.length);
-      try{
-        await limpiar(KEY_STORAGE);
-        rellenarTabla();
-        ocultarSpinner();
+      const rta = confirm('Desea eliminar por completo todos los items?');
+      mostrarSpinner();
+      if (rta) {
+          items.splice(0, items.length);
+          try {
+              await limpiar(KEY_STORAGE);
+              rellenarTabla();
+          } catch (error) {
+              alert(error);
+          }
       }
-      catch(error){
-        alert(error);
-      }
-      
-    }
+      ocultarSpinner();
   });
 }
 
-
-/*  INCLUYO NAV BAR, HEADER Y FOOTER  */
-
-// Genero la nav bar
 function generarNavBar() {
-  const navBarHTML = `
-      <nav>
-          <ul>
-              <li><a href="#">Nosotros</a></li>
-              <li><a href="#">Anuncios</a></li>
-              <li><a href="#">Blog</a></li>
-              <li><a href="#">Contacto</a></li>
-          </ul>
-      </nav>`;
-  return navBarHTML;
+    const navBarHTML = `
+        <nav>
+            <ul>
+                <li><a href="#">Nosotros</a></li>
+                <li><a href="#">Anuncios</a></li>
+                <li><a href="#">Blog</a></li>
+                <li><a href="#">Contacto</a></li>
+            </ul>
+        </nav>`;
+    return navBarHTML;
 }
 
-// Genero el resto del contenido del Header en HTML
-function generarHTMLHeader(){
-  const headerHTML = `
-      <!--
-      <img class="logo" src="./images/logo.svg" alt="Logo Empresa">
-      -->
-      <h1>Titulo de mi web</h1>`;
-  return headerHTML;
+function generarHTMLHeader() {
+    const headerHTML = `
+        <h1>Titulo de mi web</h1>`;
+    return headerHTML;
 }
 
-// Genero el contenido del Footer en HTML
-function generarHTMLFooter(){
-  const footerHTML = `
-          <p>Todos los derechos reservados 2024 &copy | By Cristian Rosales - UTN : Laboratorio III - Simulacro</p>
-      `;
-      return footerHTML;
+function generarHTMLFooter() {
+    const footerHTML = `
+        <p>Todos los derechos reservados 2024 &copy | By Cristian Rosales - UTN : Laboratorio III - Simulacro</p>`;
+    return footerHTML;
 }
 
-// Inyecto la navbar en el header y el footer
-function includeNavBar(){
-  const header = document.getElementById('header');
-  const footer = document.getElementById('footer');
-  const navBar = generarNavBar();
+function includeNavBar() {
+    const header = document.getElementById('header');
+    const footer = document.getElementById('footer');
+    const navBar = generarNavBar();
 
-  header.innerHTML = navBar;
-  footer.innerHTML = navBar;
-
+    header.innerHTML = navBar;
+    footer.innerHTML = navBar;
 }
 
-//Inyecto la navbar y el contenido del HTML en el header
 function includeHeader() {
-  const header = document.getElementById('header');
-  const headerContent = generarHTMLHeader();
-  header.innerHTML += headerContent;
+    const header = document.getElementById('header');
+    const headerContent = generarHTMLHeader();
+    header.innerHTML += headerContent;
 }
 
-//Inyecto la navbar y el contenido del HTML en el footer
-function includeFooter(){
-  const footer = document.getElementById('footer');
-  const footerContent = generarHTMLFooter();
-  footer.innerHTML += footerContent;
+function includeFooter() {
+    const footer = document.getElementById('footer');
+    const footerContent = generarHTMLFooter();
+    footer.innerHTML += footerContent;
 }
