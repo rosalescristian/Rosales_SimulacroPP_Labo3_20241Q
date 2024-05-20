@@ -1,7 +1,6 @@
 /* import Swal from 'sweetalert2/dist/sweetalert2.js' */
 
 import { anuncio_Auto } from "./anuncio_Auto.js";
-//import { leer, escribir , limpiar, jsonToObject, objectToJson } from "./local_storage.js";
 import { leer, escribir , limpiar, jsonToObject, objectToJson } from "./local_storage_async.js";
 import { mostrarSpinner, ocultarSpinner} from "./spinner.js";
 
@@ -15,7 +14,6 @@ function onInit(){
     includeNavBar();
     includeHeader();
     includeFooter();
-    //limpiarTabla();
     actualizarFormulario();
     loadItems();
     obtenerFormulario();
@@ -40,7 +38,7 @@ async function loadItems() { // primer version de LOAD ITEMS
                                         obj.precio,
                                         obj.puertas,
                                         obj.kilometros,
-                                        obj.velocidad
+                                        obj.potencia
                                     );
         items.push(model);
     });
@@ -53,77 +51,78 @@ async function loadItems() { // primer version de LOAD ITEMS
                                 obj.precio,
                                 obj.puertas,
                                 obj.kilometros,
-                                obj.velocidad);
+                                obj.potencia);
     });
 }
-
 
 // Obtenga el elemento del DOM Table
 // Luego agregarle las filas que sean necesarias
 // se agregaran dependiendo de la cantidad de items que poseo
 function rellenarTabla() {
-  const tabla = document.getElementById("table-items");
-  const tbody = tabla.getElementsByTagName("tbody")[0];
-  tbody.innerHTML = '';
-
-  const celdas = ["id", "titulo", "transaccion", "descripcion", "precio", "puertas", "kilometros", "potencia"];
-
-  items.forEach((item) => {
-    let nuevaFila = document.createElement("tr"); // Crear una nueva fila para cada ítem
-
-    celdas.forEach((celda) => {
-      let nuevaCelda = document.createElement("td"); // Crear una nueva celda para cada propiedad
-      nuevaCelda.textContent = item[celda];
-      nuevaFila.appendChild(nuevaCelda); // Agregar la celda a la fila
+    const tabla = document.getElementById("table-items");
+    const tbody = tabla.getElementsByTagName("tbody")[0];
+    tbody.innerHTML = '';
+  
+    const celdas = ["id", "titulo", "transaccion", "descripcion", "precio", "puertas", "kilometros", "potencia"];
+  
+    items.forEach((item) => {
+      let nuevaFila = document.createElement("tr"); // Mover la creación de la fila aquí
+  
+      celdas.forEach((celda) => {
+        let nuevaCelda = document.createElement("td"); // Crear una nueva celda para cada propiedad
+        nuevaCelda.textContent = item[celda];
+        nuevaFila.appendChild(nuevaCelda); // Agregar la celda a la fila
+      });
+  
+      tbody.appendChild(nuevaFila); // Agregar la fila completa al cuerpo de la tabla
     });
-
-    tbody.appendChild(nuevaFila); // Agregar la fila completa al cuerpo de la tabla
-  });
-}
+  }
 
 function escuchandoFormulario() {
-  formulario.addEventListener("submit", (e) => {
-    e.preventDefault();
+    formulario.addEventListener("submit", async(e) => {
+        e.preventDefault();
 
-    const fechaActual = new Date();
+        const fechaActual = new Date();
 
-    const model = new anuncio_Auto( 
-      fechaActual.getTime(),                      // paso la fecha completa actual como ID
-      formulario.querySelector("#titulo").value,
-      //formulario.querySelector("#transaccion").value, // tengo q resolver como levantar el check box
-      "venta",
-      formulario.querySelector("#descripcion").value,
-      formulario.querySelector("#precio").value,
-      formulario.querySelector("#puertas").value,
-      formulario.querySelector("#kms").value,
-      formulario.querySelector("#velocidad").value,
-    );
+        const model = new anuncio_Auto( 
+          fechaActual.getTime(),                      // paso la fecha completa actual como ID
+          formulario.querySelector("#titulo").value,
+          "alquiler",                                // tengo q resolver como levantar el check box
+          formulario.querySelector("#descripcion").value,
+          formulario.querySelector("#precio").value,
+          formulario.querySelector("#puertas").value,
+          formulario.querySelector("#kms").value,
+          formulario.querySelector("#potencia").value,
+        );
 
-    const rta = model.verify();
+        const rta = model.verify();
 
-    if (rta) {
-      items.push(model);
-      const str = objectToJson(items);
+        if (rta) {
+          items.push(model);
+          const str = objectToJson(items);
+          try{
+            await escribir(KEY_STORAGE, str);
+            actualizarFormulario();
+            rellenarTabla();
+          }
+          catch(error){
+            alert(error);
+          }
+          
+          /* Swal.fire({
+              title: 'Error!',
+              text: 'Do you want to continue',
+              icon: 'error',
+              confirmButtonText: 'Cool'
+          }) */
 
-      escribir(KEY_STORAGE, str);
-      //actualizarFormulario();
-      rellenarTabla();
-
-      /* Swal.fire({
-        title: 'Error!',
-        text: 'Do you want to continue',
-        icon: 'error',
-        confirmButtonText: 'Cool'
-      }) */
-
-    } else {
-        alert("Error en la carga de datos! Hay informacion incorrecta o incompleta. Verifique.");
+        } else {
+            alert("Error en la carga de datos! Hay informacion incorrecta o incompleta. Verifique.");
+        }
+    }); 
     }
-  }); 
-}
 
 function actualizarFormulario() {
-  //formulario = obtenerFormulario();
   if (formulario){
     formulario.reset();
   }
@@ -140,38 +139,22 @@ function limpiarTabla(){
 
 function escuchandoBtnDeleteAll() {
   const btn = document.getElementById("btn-delete-all");
-  btn.addEventListener("click", (e) => {
-    const rta = confirm('Desea eliminar todos los items?');
+  btn.addEventListener("click", async (e) => {
+    const rta = confirm('Desea eliminar por completo todos los items?');
     
     if(rta){
       items.splice(0, items.length);
-      limpiar(KEY_STORAGE);
-      rellenarTabla();
+      try{
+        await limpiar(KEY_STORAGE);
+        rellenarTabla();
+      }
+      catch(error){
+        alert(error);
+      }
+      
     }
-  })
-}
-
-
-/*
-async function loadItems(){
-  mostrarSpinner();
-  let str = await leer(KEY_STORAGE);
-
-  ocultarSpinner();
-  const objetos = jsonToObject(str) || [];
-
-  objetos.forEach(obj =>{
-    const model = new Casa(
-      obj.id,
-      obj.titulo,
-      obj.precio
-    );
-
-    items.push(model);
   });
-  rellenarTabla();
 }
-*/
 
 
 /*  INCLUYO NAV BAR, HEADER Y FOOTER  */

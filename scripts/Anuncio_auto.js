@@ -1,15 +1,15 @@
 import { Anuncio } from "./anuncio.js";
 
 export class anuncio_Auto extends Anuncio{
-    constructor(id, titulo, transaccion, descripcion, precio, puertas, kilometros, velocidad) {
+    constructor(id, titulo, transaccion, descripcion, precio, puertas, kilometros, potencia) {
       super(id,titulo,transaccion,descripcion,precio);
-      this.puertas = puertas;
-      this.kilometros = kilometros;
-      this.velocidad = velocidad;
+        this.puertas = puertas;
+        this.kilometros = kilometros;
+        this.potencia = potencia;
     }
   
     verify() {
-      if(this.isValidString(this.titulo, this.descripcion) && this.isValidNumber(this.precio,this.puertas,this.kilometros,this.velocidad))
+      if(this.isValidString(this.titulo, this.descripcion) && this.isValidNumber(this.precio,this.puertas,this.kilometros,this.potencia))
         {
           return true;
         }
