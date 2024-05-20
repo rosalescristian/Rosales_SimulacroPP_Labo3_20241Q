@@ -3,9 +3,9 @@ const delay = 3000;
 
 //Funcion para leer del localStorage
 export function leer(key) {
-    //const str = localStorage.getItem(key); // aca puedo meterle validaciones al str (devuelve string o null)
-    //return JSON.parse(localStorage.getItem(key));
-    return new Promise((resolve,reject) => {
+    const str = localStorage.getItem(key); // aca puedo meterle validaciones al str (devuelve string o null)
+    return JSON.parse(localStorage.getItem(key));
+    /* return new Promise((resolve,reject) => {
       setTimeout(() =>{
         try{
           const valor = JSON.parse(localStorage.getItem(key));
@@ -15,11 +15,11 @@ export function leer(key) {
           reject(error);
         }
       },delay);
-    });
+    }); */
   }
   
-  export function limpiar(clave){
-    return new Promise((resolve, reject)=>{
+  export function limpiar(key){
+    /* return new Promise((resolve, reject)=>{
       setTimeout(() =>{
        try{
         localStorage.setItem(clave, jsonStringify(valor));
@@ -29,7 +29,9 @@ export function leer(key) {
         reject(error);
       }
     },delay);
-  });
+  }); */
+  localStorage.removeItem(key);
+
 }
 
 
@@ -37,8 +39,8 @@ export function leer(key) {
   //key = string
   //valor = objeto
   export function escribir(key, valor) {
-    //localStorage.setItem(key, JSON.stringify(valor));
-    return new Promise((resolve,reject)=>{
+    localStorage.setItem(key, JSON.stringify(valor));
+    /* return new Promise((resolve,reject)=>{
       setTimeout(()=>{
         try{
           localStorage.setItem(clave, jsonStringify(valor));
@@ -48,7 +50,7 @@ export function leer(key) {
           reject(error);
         }
       },delay);
-    })
+    }) */
   }
   
   

@@ -1,7 +1,8 @@
 /* import Swal from 'sweetalert2/dist/sweetalert2.js' */
 
 import { anuncio_Auto } from "./anuncio_Auto.js";
-import { leer, escribir , limpiar, jsonToObject, objectToJson } from "./local_storage.js";
+//import { leer, escribir , limpiar, jsonToObject, objectToJson } from "./local_storage.js";
+import { leer, escribir , limpiar, jsonToObject, objectToJson } from "./local_storage_async.js";
 import { mostrarSpinner, ocultarSpinner} from "./spinner.js";
 
 let items = [];
@@ -17,41 +18,43 @@ function onInit(){
     //limpiarTabla();
     actualizarFormulario();
     loadItems();
-    rellenarTabla();
     obtenerFormulario();
     escuchandoFormulario();
     escuchandoBtnDeleteAll();
 }
 
-/*  SCRIPTS DE LA TABLA: VERSION SINCRONICA */
+/*  SCRIPTS DE LA TABLA: VERSION ASINCRONICA */
 
-function loadItems() { // primer version de LOAD ITEMS
-  let str = leer(KEY_STORAGE) || "[]"; // traeme los datos y si estas vacio definime un array vacio.
-  const objetos = jsonToObject(str) || [];
+async function loadItems() { // primer version de LOAD ITEMS
+    mostrarSpinner();
+    let str = await leer(KEY_STORAGE) || "[]"; // traeme los datos y si estas vacio definime un array vacio.
+    ocultarSpinner();
+    const objetos = jsonToObject(str) || [];
 
-  objetos.forEach(obj => {
-    const model = new anuncio_Auto(
-                                    obj.id,
-                                    obj.titulo,
-                                    obj.transaccion,
-                                    obj.descripcion,
-                                    obj.precio,
-                                    obj.puertas,
-                                    obj.kilometros,
-                                    obj.velocidad
-                                  );
-    items.push(model);
-  });
-  items = objetos.map((obj) => {
-    return new anuncio_Auto(obj.id,
-                            obj.titulo,
-                            obj.transaccion,
-                            obj.descripcion,
-                            obj.precio,
-                            obj.puertas,
-                            obj.kilometros,
-                            obj.velocidad);
-  });
+    objetos.forEach(obj => {
+        const model = new anuncio_Auto(
+                                        obj.id,
+                                        obj.titulo,
+                                        obj.transaccion,
+                                        obj.descripcion,
+                                        obj.precio,
+                                        obj.puertas,
+                                        obj.kilometros,
+                                        obj.velocidad
+                                    );
+        items.push(model);
+    });
+    rellenarTabla();
+    items = objetos.map((obj) => {
+        return new anuncio_Auto(obj.id,
+                                obj.titulo,
+                                obj.transaccion,
+                                obj.descripcion,
+                                obj.precio,
+                                obj.puertas,
+                                obj.kilometros,
+                                obj.velocidad);
+    });
 }
 
 

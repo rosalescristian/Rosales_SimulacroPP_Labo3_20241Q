@@ -9,6 +9,21 @@ export class Anuncio {
     }
   
     verify() {
-      return this.titulo && this.precio > 0;
-    }
+      if(this.isValidString(this.titulo, this.descripcion) && this.isValidNumber(this.precio))
+        {
+          return true;
+        }
+      else{
+        return false;
+      }
+    };
+  
+    isValidString(...args){
+      return args.every(arg => typeof arg === 'string' && arg.trim().length > 0);
+    };
+
+    isValidNumber(...args){
+      const numeros = args.map(arg=>parseInt(arg)); 
+      return numeros.every(numero => typeof numero === 'number' && !isNaN(numero) && numero > 0);
+    };
   }

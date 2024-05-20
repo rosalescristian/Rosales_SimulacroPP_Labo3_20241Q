@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="./styles/styles.css">
-    <script src="./scripts/scripts.js" type="module"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> -->
+    <!-- <script src="./scripts/scripts.js" type="module"></script> --> <!-- usando "defer" despues del type sin las comillas, no hace falta q usemos el OnContentLoad + OnInit -->
+    <script src="./scripts/scripts_async.js" type="module"></script>
+    <script src="./scripts/spinner.js" type="module"></script>
+    <!-- <script src="path/to/uuid.js"></script> -->
     <title>ABM y Form</title>
 </head>
 
@@ -14,6 +18,7 @@
         <!-- el logo y los H1 y H2 los estoy inyectando desde JS-->
         <!-- el nav bar lo estoy inyectando desde JS -->
     </header>
+
     <br>
     <br>
 
@@ -104,7 +109,17 @@
           </form>
   
           <br /><br /><br /><br /><br />
-  
+
+          <button type="button" id="btn-delete-all" class="btn">Borrar todo</button>
+        </section>
+    </div>
+    
+    <div id="spinner" class="spinner">
+      <img src="./images/wheel.png" alt="Spinner" class="spinner-img">
+    </div>
+
+
+
     <div class="container-table flex">
         <table id="table-items" class="table-items table-stripped flex">
           <thead>
