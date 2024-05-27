@@ -239,7 +239,7 @@ function escuchandoFormulario() {
         const id = formulario.querySelector("#id").value;
         const modelIndex = items.findIndex((item) => item.id == id);
 
-        if (modelIndex !== -1) {
+        /* if (modelIndex !== -1) { */
             const model = items[modelIndex];
             model.titulo = formulario.querySelector("#titulo").value;
             model.transaccion = formulario.querySelector('input[name="transaccion"]:checked').value;
@@ -266,9 +266,9 @@ function escuchandoFormulario() {
             } else {
                 alert("Error en la carga de datos! Hay información incorrecta o incompleta. Verifique.");
             }
-        } else {
+        /* } else {
             alert("No se pudo encontrar el registro para editar.");
-        }
+        } */
     });
 }
 function actualizarFormulario() {
